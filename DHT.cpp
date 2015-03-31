@@ -28,24 +28,19 @@ float DHT::readTemperature(bool S) {
     switch (_type) {
     case DHT11:
       f = data[2];
-      if(S)
-      	f = convertCtoF(f);
-      	
-      return f;
-    case DHT22:
       break;
-    case DHT21:
+    case DHT21: case DHT22:
       f = data[2] & 0x7F;
       f *= 256;
       f += data[3];
       f /= 10;
       if (data[2] & 0x80)
 	f *= -1;
-      if(S)
-	f = convertCtoF(f);
-
-      return f;
+      break;
     }
+    if(S)
+	f = convertCtoF(f);
+    return f;
   }
   return NAN;
 }
@@ -65,9 +60,7 @@ float DHT::readHumidity(void) {
     case DHT11:
       f = data[0];
       return f;
-    case DHT22:
-      break;
-    case DHT21:
+    case DHT21: case DHT22:
       f = data[0];
       f *= 256;
       f += data[1];
@@ -138,9 +131,7 @@ boolean DHT::read(void) {
     while (digitalRead(_pin) == laststate) {
       counter++;
       delayMicroseconds(1);
-      if (counter == 255) {
-        break;
-      }
+      if (counter == 255) break;
     }
     laststate = digitalRead(_pin);
 
